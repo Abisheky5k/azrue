@@ -1,0 +1,79 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_testvm02_name": {
+            "defaultValue": "testvm02",
+            "type": "String"
+        },
+        "disks_testvm02_disk1_dcac54afc21b40e68a7622c44512b312_externalid": {
+            "defaultValue": "/subscriptions/16f3c79d-fe02-47ec-acd6-b70e6120efef/resourceGroups/Demo02/providers/Microsoft.Compute/disks/testvm02_disk1_dcac54afc21b40e68a7622c44512b312",
+            "type": "String"
+        },
+        "networkInterfaces_testvm02218_externalid": {
+            "defaultValue": "/subscriptions/16f3c79d-fe02-47ec-acd6-b70e6120efef/resourceGroups/Demo02/providers/Microsoft.Network/networkInterfaces/testvm02218",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2021-03-01",
+            "name": "[parameters('virtualMachines_testvm02_name')]",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_D2s_v3"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "canonical",
+                        "offer": "0001-com-ubuntu-server-focal",
+                        "sku": "20_04-lts",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_testvm02_name'), '_disk1_dcac54afc21b40e68a7622c44512b312')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_testvm02_disk1_dcac54afc21b40e68a7622c44512b312_externalid')]"
+                        },
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_testvm02_name')]",
+                    "adminUsername": "[parameters('virtualMachines_testvm02_name')]",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": false,
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "ImageDefault",
+                            "assessmentMode": "ImageDefault"
+                        }
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true,
+                    "requireGuestProvisionSignal": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_testvm02218_externalid')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    ]
+}
